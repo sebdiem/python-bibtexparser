@@ -130,9 +130,11 @@ class BibTexParser(object):
                     _add_parsed_record(record, records)
                     logger.debug('The record is set to empty')
                     record = ""
+                """
                 if len(line.strip()) > 0:
                     logger.debug('The line is not empty, add it to record')
-                    record += line
+                    record += line""" #SEB
+                record += line
 
         # catch any remaining record and send it for parsing
         _add_parsed_record(record, records)
@@ -158,7 +160,7 @@ class BibTexParser(object):
             return {}
 
         # prepare record
-        record = '\n'.join([i.strip() for i in record.split('\n')])
+        #record = '\n'.join([i.strip() for i in record.split('\n')]) SEB
         if '}\n' in record:
             record, rubbish = record.replace('\r\n', '\n').replace('\r', '\n').rsplit('}\n', 1)
 
@@ -184,7 +186,10 @@ class BibTexParser(object):
 
         # for each line in record
         logger.debug('Split the record of its lines and treat them')
-        kvs = [i.strip() for i in record.split(',\n')]
+        #kvs = [i.strip() for i in record.split(',\n')] SEB 3 lignes suivantes
+        temp_kvs1, temp_kvs2 = record.split(',\n', 1)
+        kvs = [temp_kvs1] + [i+'}' for i in temp_kvs2.split('},\n')]
+        kvs[-1] = kvs[-1][:-1] #SEB: enlever le curly à la fin en trop!
         inkey = ""
         inval = ""
         for kv in kvs:
@@ -271,7 +276,7 @@ class BibTexParser(object):
         :type val: string
         :returns: string -- value
         """
-        val = val.strip()
+        #val = val.strip() SEB
         if val.startswith('"') and val.endswith('"'):
             return val[1:-1]
         return val
@@ -283,7 +288,7 @@ class BibTexParser(object):
         :type val: string
         :returns: string -- value
         """
-        val = val.strip()
+        val.strip() # does nothing !!!
         if val.startswith('{') and val.endswith('}'):
             return val[1:-1]
         return val
